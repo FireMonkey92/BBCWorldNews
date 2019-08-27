@@ -4,7 +4,8 @@ import {
     Alert, Image,
     Text,
     KeyboardAvoidingView,
-    ScrollView
+    ScrollView,
+    TouchableNativeFeedback
 } from 'react-native';
 import * as firebase from 'firebase';
 import { Container, View, Header, Icon as NBIcon, Form, Input, Item, Button, Label } from 'native-base';
@@ -25,13 +26,19 @@ var firebaseConfig = {
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
 class Login extends Component {
+
     constructor(props) {
         super(props);
         this.state = {
             email: '',
             password: '',
-            isLoading: false
+            isLoading: false,
+            passwordView: true
         }
+
+    }
+    static navigationOptions = {
+        header: null,
     }
     signUpUser = (email, pass) => {
         this.setState({ isLoading: true })
@@ -41,8 +48,10 @@ class Login extends Component {
                 this.setState({ isLoading: false })
                 return;
             }
-            firebase.auth().createUserWithEmailAndPassword(email, pass).catch(err => Alert.alert('Authentication Error', err.message));
-            this.setState({ isLoading: false })
+            firebase.auth().createUserWithEmailAndPassword(email, pass).catch(err => {
+                Alert.alert('Authentication Error', err.message);
+                this.setState({ isLoading: false })
+            });
         } catch (error) {
             console.log(error.toString());
             this.setState({ isLoading: false })
@@ -59,6 +68,8 @@ class Login extends Component {
             firebase.auth().signInWithEmailAndPassword(email, pass).then((user) => {
                 this.setState({ isLoading: false })
                 console.log(user)
+                this.props.navigation.navigate('UserHomeScreen');
+
             }).catch((error) => {
                 Alert.alert('Authentication Error', error.message);
                 this.setState({ isLoading: false })
@@ -105,16 +116,29 @@ class Login extends Component {
                             <Label>Email</Label>
                             <Input autoCapitalize="none"
                                 autoCorrect={false}
-                                onChangeText={(email) => this.setState({ email: email.trim() })} />
+                                returnKeyType={"next"}
+                                onSubmitEditing={(event) => {
+                                    this._inputPass._root.focus();
+                                }}
+                                autoFocus={true}
+                                onChangeText={(email) => {
+                                    this.setState({ email: email.trim() });
+                                }} />
                         </Item>
                         <Item floatingLabel>
                             <NBIcon name='key' />
                             <Label>Password</Label>
                             <Input
                                 onChangeText={(password) => this.setState({ password: password.trim() })}
-                                secureTextEntry={true}
+                                getRef={(c) => this._inputPass = c}
+                                secureTextEntry={this.state.passwordView}
                                 autoCapitalize="none"
                                 autoCorrect={false} />
+                            <NBIcon name='eye' onPress={() => this.setState((prevState, props) => {
+                                return {
+                                    passwordView: !prevState.passwordView
+                                }
+                            })} />
                         </Item>
                         {this.state.isLoading ? <LoadingAnimation></LoadingAnimation> : <Text></Text>}
                         <Button onPress={() => this.loginUser(this.state.email, this.state.password)} style={{ marginTop: 20, }} full rounded success><Text style={{ color: 'white' }}>Login</Text></Button>
