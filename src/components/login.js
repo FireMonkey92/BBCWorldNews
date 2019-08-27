@@ -7,7 +7,8 @@ import {
     ScrollView
 } from 'react-native';
 import * as firebase from 'firebase';
-import { Container, View, Header, Icon, Form, Input, Item, Button, Label } from 'native-base';
+import { Container, View, Header, Icon as NBIcon, Form, Input, Item, Button, Label } from 'native-base';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import LoadingAnimation from '../widgets/loadingAnimation';
 
@@ -91,23 +92,23 @@ class Login extends Component {
             <KeyboardAvoidingView style={styles.container} enabled>
                 <Container style={styles.container} >
                     <Form>
-                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", marginBottom: 80 }}>
+                        <View style={{ flex: 1, alignItems: "center", justifyContent: "center", marginBottom: 50 }}>
                             <Image
-                                style={{ width: 400, height: 200 }}
+                                style={{ width: 280, height: 190 }}
                                 source={require('../assests/images/bbcnewsLogo.png')}
                             />
                             {/* <Image source={{ uri: 'http://www.userlogos.org/files/logos/macleod.mac/bbcnews.8.o.png' }} style={{ height: 400, width: "100%" }} /> */}
                             {/* <Image source={{ uri: 'https://senderlogos.images.dvbdata.com/302x190_w/67.png' }} style={{ height: 300, width: 190 }} /> */}
                         </View>
                         <Item floatingLabel>
-                            <Icon name='mail' />
+                            <NBIcon name='mail' />
                             <Label>Email</Label>
                             <Input autoCapitalize="none"
                                 autoCorrect={false}
                                 onChangeText={(email) => this.setState({ email: email.trim() })} />
                         </Item>
                         <Item floatingLabel>
-                            <Icon name='key' />
+                            <NBIcon name='key' />
                             <Label>Password</Label>
                             <Input
                                 onChangeText={(password) => this.setState({ password: password.trim() })}
@@ -118,9 +119,23 @@ class Login extends Component {
                         {this.state.isLoading ? <LoadingAnimation></LoadingAnimation> : <Text></Text>}
                         <Button onPress={() => this.loginUser(this.state.email, this.state.password)} style={{ marginTop: 20, }} full rounded success><Text style={{ color: 'white' }}>Login</Text></Button>
                         <Button onPress={() => this.signUpUser(this.state.email, this.state.password)} style={{ marginTop: 20, }} full rounded primary><Text style={{ color: 'white' }}>Sign Up</Text></Button>
-                        <Button onPress={() => this.loginWithFacebook()} style={{ marginTop: 20, }} full rounded primary><Text style={{ color: 'white' }}>Login with Facebook</Text></Button>
+                        <View style={{ marginTop: 20, justifyContent: 'space-around', alignItems: "stretch", display: 'flex', flexDirection: "row" }}>
+                            <Icon.Button
+                                style={{ height: 50, padding: 10 }}
+                                name="facebook"
+                                backgroundColor="#3b5998"
+                                onPress={this.loginWithFacebook}>
+                                Login with Facebook
+                           </Icon.Button>
+                            <Icon.Button
+                                style={{ height: 50, padding: 10 }}
+                                name="google"
+                                onPress={() => Alert.alert('Hey There!!', 'This features comming soon..!')}
+                                backgroundColor="#DB4437">
+                                Login with Google
+                           </Icon.Button>
+                        </View>
                     </Form>
-
                 </Container>
             </KeyboardAvoidingView>
         )
